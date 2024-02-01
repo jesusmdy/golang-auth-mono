@@ -59,6 +59,10 @@ func main() {
 	v1Router.Put("/users", apiCfg.handleCreateUser)
 	v1Router.Post("/users/login", apiCfg.handleAuthenticateUser)
 	v1Router.Get("/users/me", apiCfg.middlewareAuth(apiCfg.handleGetAuthenticatedUser))
+	v1Router.Post(
+		"/users/enable/{userId}",
+		apiCfg.middlewareRole(apiCfg.handleUpdateUserAvailability, "admin"),
+	)
 
 	router.Mount("/v1", v1Router)
 

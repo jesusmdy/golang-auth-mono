@@ -64,6 +64,20 @@ SELECT
 FROM users
 WHERE email = $1;
 
+-- name: GetUserById :one
+SELECT
+  id,
+  created_at,
+  updated_at,
+  fullName,
+  username,
+  email,
+  password,
+  role,
+  disabled
+FROM users
+WHERE id = $1;
+
 -- name: UpdateUser :one
 UPDATE users
 SET
@@ -121,4 +135,21 @@ RETURNING (
   disabled
 );
 
+-- name: UpdateUserAvailability :one
 
+UPDATE users
+SET
+  updated_at = $2,
+  disabled = $3
+WHERE id = $1
+
+RETURNING (
+  id,
+  created_at,
+  updated_at,
+  fullName,
+  username,
+  email,
+  role,
+  disabled
+);

@@ -111,6 +111,38 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
+const getUserById = `-- name: GetUserById :one
+SELECT
+  id,
+  created_at,
+  updated_at,
+  fullName,
+  username,
+  email,
+  password,
+  role,
+  disabled
+FROM users
+WHERE id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Fullname,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.Role,
+		&i.Disabled,
+	)
+	return i, err
+}
+
 const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT
   id,
@@ -177,6 +209,39 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (interfa
 		arg.Fullname,
 		arg.Username,
 	)
+	var column_1 interface{}
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const updateUserAvailability = `-- name: UpdateUserAvailability :one
+
+UPDATE users
+SET
+  updated_at = $2,
+  disabled = $3
+WHERE id = $1
+
+RETURNING (
+  id,
+  created_at,
+  updated_at,
+  fullName,
+  username,
+  email,
+  role,
+  disabled
+)
+`
+
+type UpdateUserAvailabilityParams struct {
+	ID        uuid.UUID
+	UpdatedAt time.Time
+	Disabled  bool
+}
+
+func (q *Queries) UpdateUserAvailability(ctx context.Context, arg UpdateUserAvailabilityParams) (interface{}, error) {
+	row := q.db.QueryRowContext(ctx, updateUserAvailability, arg.ID, arg.UpdatedAt, arg.Disabled)
 	var column_1 interface{}
 	err := row.Scan(&column_1)
 	return column_1, err

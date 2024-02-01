@@ -73,6 +73,7 @@ func (apiCfg apiConfig) handleCreateUser(
 		Email:     params.Email,
 		Password:  passwordHash,
 		Role:      "user",
+		Disabled:  false,
 	}
 
 	_, err = apiCfg.DB.CreateUser(r.Context(), newUser)
@@ -98,6 +99,7 @@ func (apiCfg apiConfig) handleCreateUser(
 		Username string    `json:"username"`
 		Email    string    `json:"email"`
 		Role     string    `json:"role"`
+		Disabled bool      `json:"disabled"`
 	}
 
 	respondWithJSON(w, http.StatusOK, response{
@@ -105,6 +107,7 @@ func (apiCfg apiConfig) handleCreateUser(
 		FullName: newUser.Fullname,
 		Username: newUser.Username,
 		Email:    newUser.Email,
+		Role:     newUser.Role,
 	})
 }
 
@@ -195,4 +198,83 @@ func (apiCfg apiConfig) handleGetAuthenticatedUser(
 		Email:    user.Email,
 		Role:     user.Role,
 	})
+}
+
+func (apiCfg apiConfig) handleUpdateUserAvailability(
+	w http.ResponseWriter,
+	r *http.Request,
+	user database.User,
+) {
+	type parametes struct {
+		Disabled bool `json:"disabled"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+
+	params := parametes{}
+	err := decoder.Decode(&params)
+
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	// get user id from url
+	userID := r.URL.Query().Get("userId")
+
+	if userID == "" {
+		respondWithError(w, http.StatusBadRequest, "User ID is required")
+		return
+	}
+
+	// check if user id is valid
+	_, err = uuid.Parse(userID)
+
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user ID")
+		return
+	}
+
+	// check if user is trying to disable themselves
+	if user.ID.String() == userID {
+		respondWithError(w, http.StatusBadRequest, "You cannot disable yourself")
+		return
+	}
+
+	// check if user is trying to disable an admin
+	userToDisable, err := apiCfg.DB.GetUserById(r.Context(), uuid.MustParse(userID))
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error getting user")
+		return
+	}
+
+	if userToDisable.Role == "admin" {
+		respondWithError(w, http.StatusBadRequest, "You cannot disable an admin")
+		return
+	}
+
+	// update user availability
+	updatedAt := time.Now().UTC()
+	_, err = apiCfg.DB.UpdateUserAvailability(
+		r.Context(),
+		database.UpdateUserAvailabilityParams{
+			ID:        uuid.MustParse(userID),
+			UpdatedAt: updatedAt,
+			Disabled:  params.Disabled,
+		},
+	)
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error updating user availability")
+		return
+	}
+
+	message := "User disabled"
+
+	if !params.Disabled {
+		message = "User enabled"
+	}
+
+	respondWithJSON(w, http.StatusOK, message)
+
 }
