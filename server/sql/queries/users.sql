@@ -153,3 +153,24 @@ RETURNING (
   role,
   disabled
 );
+
+-- name: UpdateUserDetails :one
+
+UPDATE users
+SET
+  updated_at = $2,
+  fullName = $3,
+  username = $4,
+  email = $5
+WHERE id = $1
+
+RETURNING (
+  id,
+  created_at,
+  updated_at,
+  fullName,
+  username,
+  email,
+  role,
+  disabled
+);

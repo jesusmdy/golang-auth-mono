@@ -247,6 +247,49 @@ func (q *Queries) UpdateUserAvailability(ctx context.Context, arg UpdateUserAvai
 	return column_1, err
 }
 
+const updateUserDetails = `-- name: UpdateUserDetails :one
+
+UPDATE users
+SET
+  updated_at = $2,
+  fullName = $3,
+  username = $4,
+  email = $5
+WHERE id = $1
+
+RETURNING (
+  id,
+  created_at,
+  updated_at,
+  fullName,
+  username,
+  email,
+  role,
+  disabled
+)
+`
+
+type UpdateUserDetailsParams struct {
+	ID        uuid.UUID
+	UpdatedAt time.Time
+	Fullname  string
+	Username  string
+	Email     string
+}
+
+func (q *Queries) UpdateUserDetails(ctx context.Context, arg UpdateUserDetailsParams) (interface{}, error) {
+	row := q.db.QueryRowContext(ctx, updateUserDetails,
+		arg.ID,
+		arg.UpdatedAt,
+		arg.Fullname,
+		arg.Username,
+		arg.Email,
+	)
+	var column_1 interface{}
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const updateUserEmail = `-- name: UpdateUserEmail :one
 
 UPDATE users
