@@ -10,6 +10,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type Product struct {
+	ID          uuid.UUID
+	Title       string
+	Price       int32
+	Description string
+	Category    string
+	Image       string
+	Rate        int32
+	Count       int32
+}
+
 type User struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
@@ -20,4 +31,11 @@ type User struct {
 	Password  string
 	Role      string
 	Disabled  bool
+}
+
+type UserShoppingList struct {
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	ProductID uuid.UUID
+	DateAdded time.Time
 }

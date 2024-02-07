@@ -2,19 +2,18 @@
 
 import { useUser } from '@/store/user';
 import { FC } from 'react';
+import ProductList from './productList';
 
 const HomeContent: FC = () => {
   const user = useUser();
   return (
     <div>
-      <h1 className="text-2xl">Welcome</h1>
-      <div className="text-xl">
+      <h1 className="text-2xl my-4">
         {
-          user
-            ? `Hello, ${user.username}`
-            : 'Hello, guest'
+          `Welcome ${user ? user.fullName : 'guest'}!`
         }
-      </div>
+      </h1>
+      <ProductList />
     </div>
   )
 };

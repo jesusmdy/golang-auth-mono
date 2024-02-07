@@ -1,6 +1,5 @@
 import { User } from '@/types/user';
-
-const BASE_URL = 'http://localhost:3001/v1';
+import { BASE_URL } from '.';
 
 interface SignInWithEmailAndPasswordResponse extends User {
   token: string;

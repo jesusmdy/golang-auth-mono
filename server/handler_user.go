@@ -14,7 +14,7 @@ func (apiCfg apiConfig) handleCreateUser(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	type parametes struct {
+	type parameters struct {
 		FullName string `json:"fullName"`
 		Username string `json:"username"`
 		Email    string `json:"email"`
@@ -23,7 +23,7 @@ func (apiCfg apiConfig) handleCreateUser(
 
 	decoder := json.NewDecoder(r.Body)
 
-	params := parametes{}
+	params := parameters{}
 	err := decoder.Decode(&params)
 
 	if err != nil {
@@ -116,7 +116,7 @@ func (apiCfg apiConfig) handleAuthenticateUser(
 	r *http.Request,
 ) {
 
-	type parametes struct {
+	type parameters struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 		Alt      bool   `json:"alt"`
@@ -124,7 +124,7 @@ func (apiCfg apiConfig) handleAuthenticateUser(
 
 	decoder := json.NewDecoder(r.Body)
 
-	params := parametes{}
+	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -205,13 +205,13 @@ func (apiCfg apiConfig) handleUpdateUserAvailability(
 	r *http.Request,
 	user database.User,
 ) {
-	type parametes struct {
+	type parameters struct {
 		Disabled bool `json:"disabled"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
 
-	params := parametes{}
+	params := parameters{}
 	err := decoder.Decode(&params)
 
 	if err != nil {
@@ -371,7 +371,7 @@ func (apiCfg apiConfig) handleUpdateUserDetails(
 	r *http.Request,
 	user database.User,
 ) {
-	type parametes struct {
+	type parameters struct {
 		FullName string `json:"fullName"`
 		Username string `json:"username"`
 		Email    string `json:"email"`
@@ -379,7 +379,7 @@ func (apiCfg apiConfig) handleUpdateUserDetails(
 
 	decoder := json.NewDecoder(r.Body)
 
-	params := parametes{}
+	params := parameters{}
 	err := decoder.Decode(&params)
 
 	if err != nil {

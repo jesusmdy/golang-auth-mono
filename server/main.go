@@ -74,6 +74,15 @@ func main() {
 		apiCfg.handleCheckEmailAvailability,
 	)
 
+	// products
+	v1Router.Get("/products", apiCfg.handlerListProducts)
+
+	// admin routes
+	v1Router.Post(
+		"/products",
+		apiCfg.middlewareRole(apiCfg.handlerBatchAddProducts, "admin"),
+	)
+
 	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
