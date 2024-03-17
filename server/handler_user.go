@@ -189,6 +189,7 @@ func (apiCfg apiConfig) handleGetAuthenticatedUser(
 		Username string    `json:"username"`
 		Email    string    `json:"email"`
 		Role     string    `json:"role"`
+		Balance  int64     `json:"balance"`
 	}
 
 	respondWithJSON(w, http.StatusOK, response{
@@ -197,6 +198,7 @@ func (apiCfg apiConfig) handleGetAuthenticatedUser(
 		Username: user.Username,
 		Email:    user.Email,
 		Role:     user.Role,
+		Balance:  user.Balance,
 	})
 }
 

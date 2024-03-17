@@ -45,7 +45,8 @@ SELECT
   email,
   password,
   role,
-  disabled
+  disabled,
+  balance
 FROM users
 WHERE username = $1;
 
@@ -60,7 +61,8 @@ SELECT
   email,
   password,
   role,
-  disabled
+  disabled,
+  balance
 FROM users
 WHERE email = $1;
 

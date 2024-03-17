@@ -6,7 +6,7 @@ const Home: FC = () => {
   return (
     <div>
       <Toolbar />
-      <div className="w-full max-w-xl mx-auto">
+      <div className="w-full max-w-screen-xl mx-auto">
         <HomeContent />
       </div>
     </div>

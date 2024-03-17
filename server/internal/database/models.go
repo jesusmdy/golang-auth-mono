@@ -31,6 +31,7 @@ type User struct {
 	Password  string
 	Role      string
 	Disabled  bool
+	Balance   int64
 }
 
 type UserShoppingList struct {

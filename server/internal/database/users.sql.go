@@ -89,7 +89,8 @@ SELECT
   email,
   password,
   role,
-  disabled
+  disabled,
+  balance
 FROM users
 WHERE email = $1
 `
@@ -107,6 +108,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Password,
 		&i.Role,
 		&i.Disabled,
+		&i.Balance,
 	)
 	return i, err
 }
@@ -126,9 +128,21 @@ FROM users
 WHERE id = $1
 `
 
-func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
+type GetUserByIdRow struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Fullname  string
+	Username  string
+	Email     string
+	Password  string
+	Role      string
+	Disabled  bool
+}
+
+func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserById, id)
-	var i User
+	var i GetUserByIdRow
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
@@ -153,7 +167,8 @@ SELECT
   email,
   password,
   role,
-  disabled
+  disabled,
+  balance
 FROM users
 WHERE username = $1
 `
@@ -171,6 +186,7 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.Password,
 		&i.Role,
 		&i.Disabled,
+		&i.Balance,
 	)
 	return i, err
 }
